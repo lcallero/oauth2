@@ -1,4 +1,4 @@
-package br.com.oauthtwo.jaxrs.provider;
+package br.com.oauthtwo.setup;
  
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;

@@ -1,4 +1,4 @@
-package br.com.oauthtwo.token;
+package br.com.oauthtwo.api.token;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +19,12 @@ public class TokenStore {
 	}
 
 	public Token storeToken(Token t) {
-		return tokenStore.put(t.getAccessToken(), t);
+		tokenStore.put(t.getAccessToken(), t);
+		return tokenStore.get(t.getAccessToken());
 	}
 
-	public Token retrieveToken(String id) {
-		return tokenStore.get(id);
+	public Token retrieveToken(String accessToken) {
+		return tokenStore.get(accessToken);
 	}
 
 }

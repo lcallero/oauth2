@@ -1,10 +1,9 @@
-package br.com.oauthtwo.model;
+package br.com.oauthtwo.api.token;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import br.com.oauthtwo.util.ChaveCriptografica;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -34,96 +33,60 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * </pre>
  */
 
-public class AccessToken {
+public class Token {
 
-	private static final int	SEIS_MINUTOS	= 3600000;
+	private static ObjectMapper	jackson	= new ObjectMapper();
 
-	private String				clientId;
-	private TokenType			type;
+	private String				accessToken;
+	private String				refreshToken;
+	private String				type;
 	private Long				expiresIn;
 	private String				scope;
 	private String				username;
-	private Map<String, String>	params			= new HashMap<String, String>();
 
-	private AccessToken() {
+	public String getAccessToken() {
+		return accessToken;
 	}
 
-	public AccessToken(final String clientId, final TokenType type, final String scope, final String username) {
-		this.clientId = clientId;
-		this.type = type;
-		this.expiresIn = System.currentTimeMillis() + SEIS_MINUTOS;
-		this.scope = scope;
-		this.username = username;
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 
-	public AccessToken(final String tokenCifrado) {
-		ObjectMapper mapper = new ObjectMapper();
-		final ChaveCriptografica chaveCriptografica = new ChaveCriptografica();
-		try {
-			AccessToken accessTokenTemp = mapper.readValue(chaveCriptografica.decrypt(tokenCifrado), AccessToken.class);
-			this.clientId = accessTokenTemp.clientId;
-			this.type = accessTokenTemp.type;
-			this.expiresIn = accessTokenTemp.expiresIn;
-			this.scope = accessTokenTemp.scope;
-			this.params = accessTokenTemp.params;
-			this.username = accessTokenTemp.username;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
-	private String toJson() {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			final String tokenString = objectMapper.writeValueAsString(this);
-			return tokenString;
-		} catch (Exception e) {
-			throw new RuntimeException("it was not possible to serialize the token into json", e);
-		}
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
 	}
 
-	public String token() {
-		final String aCriptografar = this.toJson();
-		final ChaveCriptografica chaveCriptografica = new ChaveCriptografica();
-		return chaveCriptografica.encrypt(aCriptografar);
-	}
+	private Map<String, String>	params	= new HashMap<String, String>();
 
-	public String getClientId() {
-		return clientId;
-	}
-
-	public TokenType getType() {
-		return type;
+	private Token() {
 	}
 
 	public Long getExpiresIn() {
 		return expiresIn;
 	}
 
+	public void setExpiresIn(Long expiresIn) {
+		this.expiresIn = expiresIn;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public String getScope() {
 		return scope;
 	}
 
-	public void addParam(final String key, final String value) {
-		params.put(key, value);
-	}
-
-	public String getParam(final String key) {
-		return params.get(key);
-	}
-
-	public Map<String, String> getParams() {
-		return params;
-	}
-
-	public boolean active() {
-		return this.expiresIn > System.currentTimeMillis();
-	}
-
-	public void addAllParams(Map<String, String> params) {
-		for (String key : params.keySet()) {
-			this.params.put(key, params.get(key));
-		}
+	public void setScope(String scope) {
+		this.scope = scope;
 	}
 
 	public String getUsername() {
@@ -134,8 +97,22 @@ public class AccessToken {
 		this.username = username;
 	}
 
+	public Map<String, String> getParams() {
+		return params;
+	}
+
+	public void setParams(Map<String, String> params) {
+		this.params = params;
+	}
+
 	@Override
 	public String toString() {
-		return this.toJson();
+		try {
+			return jackson.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
+
 }

@@ -1,4 +1,4 @@
-package br.com.oauthtwo.jaxrs.application;
+package br.com.oauthtwo.setup;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 
-@ApplicationPath("/")
+@ApplicationPath("/api")
 public class ApplicationConfig extends Application {
 
 	@Override
@@ -26,8 +26,9 @@ public class ApplicationConfig extends Application {
 		// resources.add(com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider.class);
 
 		// instead let's do it manually:
-		resources.add(br.com.oauthtwo.jaxrs.provider.JacksonJsonProvider.class);
-		resources.add(br.com.oauthtwo.resource.ClientResource.class);
+		resources.add(br.com.oauthtwo.setup.JacksonJsonProvider.class);
+		resources.add(br.com.oauthtwo.api.client.ClientEndpoint.class);
+		resources.add(br.com.oauthtwo.api.token.TokenEndpoint.class);
 		// ==> we could also choose packages, see below getProperties()
 
 		System.out.println("REST configuration ended successfully.");

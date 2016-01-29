@@ -18,7 +18,6 @@ public class TokenEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Token create(Token t) {
-
 		return tokenStore.storeToken(t);
 	}
 

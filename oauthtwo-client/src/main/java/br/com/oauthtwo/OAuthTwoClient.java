@@ -18,22 +18,26 @@
  * /
  */
 
-package br.com.oauthtwo.client;
+package br.com.oauthtwo;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.axiom.om.util.Base64;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -41,7 +45,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -56,22 +59,6 @@ import org.wso2.carbon.apimgt.api.model.OAuthApplicationInfo;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.factory.KeyManagerHolder;
 import org.wso2.carbon.apimgt.keymgt.AbstractKeyManager;
-
-import javax.xml.stream.XMLStreamException;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 /**
@@ -116,9 +103,6 @@ public class OAuthTwoClient extends AbstractKeyManager {
 		String registrationEndpoint = config.getParameter(OAuthTwoConstants.CLIENT_REG_ENDPOINT);
 		String registrationToken = config.getParameter(OAuthTwoConstants.REGISTRAION_ACCESS_TOKEN);
 
-		System.out.println(">>>>>> registrationEndpoint:" + registrationEndpoint);
-		System.out.println(">>>>>> registrationToken:" + registrationToken);
-
 		HttpPut httpPut = new HttpPut(registrationEndpoint.trim());
 
 		HttpClient httpClient = getHttpClient();
@@ -127,8 +111,6 @@ public class OAuthTwoClient extends AbstractKeyManager {
 		try {
 			// Create the JSON Payload that should be sent to OAuth Server.
 			String jsonPayload = createJsonPayloadFromOauthApplication(oAuthApplicationInfo);
-
-			System.out.println("Jsson for new client:" + jsonPayload);
 
 			log.debug("Payload for creating new client : " + jsonPayload);
 
@@ -402,7 +384,7 @@ public class OAuthTwoClient extends AbstractKeyManager {
 
 		try {
 			URIBuilder uriBuilder = new URIBuilder(introspectionURL);
-			uriBuilder.addParameter("" + "", accessToken);
+			uriBuilder.addParameter("access_token", accessToken);
 			uriBuilder.build();
 
 			HttpGet httpGet = new HttpGet(uriBuilder.build());
@@ -523,6 +505,41 @@ public class OAuthTwoClient extends AbstractKeyManager {
 
 		OAuthApplicationInfo oAuthApplicationInfo = appInfoRequest.getOAuthApplicationInfo();
 		return oAuthApplicationInfo;
+	}
+
+	@Override
+	public boolean registerNewResource(API api, Map resourceAttributes) throws APIManagementException {
+		return true;
+	}
+
+	@Override
+	public Map getResourceByApiId(String apiId) throws APIManagementException {
+		return null;
+	}
+
+	@Override
+	public boolean updateRegisteredResource(API api, Map resourceAttributes) throws APIManagementException {
+		return true;
+	}
+
+	@Override
+	public void deleteRegisteredResourceByAPIId(String apiID) throws APIManagementException {
+
+	}
+
+	@Override
+	public void deleteMappedApplication(String s) throws APIManagementException {
+
+	}
+
+	@Override
+	public Set<String> getActiveTokensByConsumerKey(String s) throws APIManagementException {
+		return null;
+	}
+
+	@Override
+	public AccessTokenInfo getAccessTokenByConsumerKey(String s) throws APIManagementException {
+		return null;
 	}
 
 	/**
@@ -662,45 +679,4 @@ public class OAuthTwoClient extends AbstractKeyManager {
 		}
 	}
 
-	@Override
-	public void deleteMappedApplication(String arg0) throws APIManagementException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteRegisteredResourceByAPIId(String arg0) throws APIManagementException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public AccessTokenInfo getAccessTokenByConsumerKey(String arg0) throws APIManagementException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Set<String> getActiveTokensByConsumerKey(String arg0) throws APIManagementException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map getResourceByApiId(String arg0) throws APIManagementException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean registerNewResource(API arg0, Map arg1) throws APIManagementException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean updateRegisteredResource(API arg0, Map arg1) throws APIManagementException {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -65,7 +65,7 @@
 				<configuration>
 					<url>http://localhost:8080/manager/text</url>
 					<server>TomcatServer</server>
-					<path>/wauth</path>
+					<path>/</path>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -19,8 +19,8 @@ public class ClientStore {
 	}
 
 	public Client storeClient(Client c) {
-		clientStore.put(c.getClientId(), c);
-		return clientStore.get(c.getClientId());
+		clientStore.put(c.getId(), c);
+		return clientStore.get(c.getId());
 	}
 
 	public Client retrieveClient(String id) {
@@ -30,5 +30,4 @@ public class ClientStore {
 	public Client removeClient(String id) {
 		return clientStore.remove(id);
 	}
-
 }

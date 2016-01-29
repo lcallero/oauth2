@@ -35,14 +35,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Token {
 
-	private static ObjectMapper	jackson	= new ObjectMapper();
+	private static ObjectMapper	jackson		= new ObjectMapper();
 
 	private String				accessToken;
 	private String				refreshToken;
 	private String				type;
-	private Long				expiresIn;
-	private String				scope;
-	private String				username;
+	private Long				expires_in;
+	private String[]			scopes;
+	private String				audience;
+
+	private Map<String, String>	principal	= new HashMap<>();
+
+	public Map<String, String> getPrincipal() {
+		return this.principal;
+	}
+
+	public void setPrincipal(Map<String, String> principal) {
+		this.principal = principal;
+	}
 
 	public String getAccessToken() {
 		return accessToken;
@@ -65,12 +75,12 @@ public class Token {
 	private Token() {
 	}
 
-	public Long getExpiresIn() {
-		return expiresIn;
+	public Long getExpires_in() {
+		return expires_in;
 	}
 
-	public void setExpiresIn(Long expiresIn) {
-		this.expiresIn = expiresIn;
+	public void setExpires_in(Long expires_in) {
+		this.expires_in = expires_in;
 	}
 
 	public String getType() {
@@ -81,20 +91,20 @@ public class Token {
 		this.type = type;
 	}
 
-	public String getScope() {
-		return scope;
+	public String getAudience() {
+		return audience;
 	}
 
-	public void setScope(String scope) {
-		this.scope = scope;
+	public void setAudience(String audience) {
+		this.audience = audience;
 	}
 
-	public String getUsername() {
-		return username;
+	public String[] getScopes() {
+		return scopes;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setScopes(String[] scopes) {
+		this.scopes = scopes;
 	}
 
 	public Map<String, String> getParams() {

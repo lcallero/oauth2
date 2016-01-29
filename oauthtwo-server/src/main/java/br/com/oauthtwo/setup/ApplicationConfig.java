@@ -9,7 +9,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 
-@ApplicationPath("/api")
+@ApplicationPath("/v1")
 public class ApplicationConfig extends Application {
 
 	@Override

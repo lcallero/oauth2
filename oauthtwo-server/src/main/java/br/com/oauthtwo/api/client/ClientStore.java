@@ -3,31 +3,35 @@ package br.com.oauthtwo.api.client;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class ClientStore {
 
-	private static final ClientStore	INSTANCE	= new ClientStore();
+    private static final ClientStore INSTANCE = new ClientStore();
 
-	// Mapa de clients. Deve ser substituido por um database
-	private Map<String, Client>			clientStore	= new HashMap<>();
+    // Mapa de clients. Deve ser substituido por um database
+    private Map<Long, Client> clientStore = new HashMap<>();
 
-	private ClientStore() {
-	}
+    private ClientStore() {
+    }
 
-	public static ClientStore getInstance() {
-		return INSTANCE;
-	}
+    public static ClientStore getInstance() {
+	return INSTANCE;
+    }
 
-	public Client storeClient(Client c) {
-		clientStore.put(c.getId(), c);
-		return clientStore.get(c.getId());
-	}
+    public Client storeClient(Client c) {
+	System.out.println("Client stored:" + c);
+	clientStore.put(c.getId(), c);
+	return clientStore.get(c.getId());
+    }
 
-	public Client retrieveClient(String id) {
-		return clientStore.get(id);
-	}
+    public Client retrieveClient(Long id) {
+	return clientStore.get(id);
+    }
 
-	public Client removeClient(String id) {
-		return clientStore.remove(id);
-	}
+    public Client removeClient(String id) {
+	return clientStore.remove(id);
+    }
+
+    public Map<Long, Client> listAllClients() {
+	return this.clientStore;
+    }
 }

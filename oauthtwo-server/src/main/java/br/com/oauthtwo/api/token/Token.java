@@ -6,7 +6,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 /**
  * AccessToken
  * 
@@ -30,99 +29,98 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *       "expires_in":3600,
  *       "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA"
  *     }
- * </pre>
+ *      </pre>
  */
 
 public class Token {
 
-	private static ObjectMapper	jackson		= new ObjectMapper();
+    private static ObjectMapper jackson = new ObjectMapper();
 
-	private String				accessToken;
-	private String				refreshToken;
-	private String				type;
-	private Long				expires_in;
-	private String[]			scopes;
-	private String				audience;
+    private String accessToken;
+    private String refreshToken;
+    private String type;
+    private Long expires_in;
+    private String[] scopes;
+    private String audience;
+    private Principal principal;
 
-	private Map<String, String>	principal	= new HashMap<>();
+    public Principal getPrincipal() {
+	return this.principal;
+    }
 
-	public Map<String, String> getPrincipal() {
-		return this.principal;
+    public void setPrincipal(Principal principal) {
+	this.principal = principal;
+    }
+
+    public String getAccessToken() {
+	return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+	this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+	return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+	this.refreshToken = refreshToken;
+    }
+
+    private Map<String, String> params = new HashMap<String, String>();
+
+    private Token() {
+    }
+
+    public Long getExpires_in() {
+	return expires_in;
+    }
+
+    public void setExpires_in(Long expires_in) {
+	this.expires_in = expires_in;
+    }
+
+    public String getType() {
+	return type;
+    }
+
+    public void setType(String type) {
+	this.type = type;
+    }
+
+    public String getAudience() {
+	return audience;
+    }
+
+    public void setAudience(String audience) {
+	this.audience = audience;
+    }
+
+    public String[] getScopes() {
+	return scopes;
+    }
+
+    public void setScopes(String[] scopes) {
+	this.scopes = scopes;
+    }
+
+    public Map<String, String> getParams() {
+	return params;
+    }
+
+    public void setParams(Map<String, String> params) {
+	this.params = params;
+    }
+
+    @Override
+    public String toString() {
+	try {
+	    return jackson.writeValueAsString(this);
+	} catch (JsonProcessingException e) {
+	    e.printStackTrace();
 	}
-
-	public void setPrincipal(Map<String, String> principal) {
-		this.principal = principal;
-	}
-
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-
-	public void setRefreshToken(String refreshToken) {
-		this.refreshToken = refreshToken;
-	}
-
-	private Map<String, String>	params	= new HashMap<String, String>();
-
-	private Token() {
-	}
-
-	public Long getExpires_in() {
-		return expires_in;
-	}
-
-	public void setExpires_in(Long expires_in) {
-		this.expires_in = expires_in;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getAudience() {
-		return audience;
-	}
-
-	public void setAudience(String audience) {
-		this.audience = audience;
-	}
-
-	public String[] getScopes() {
-		return scopes;
-	}
-
-	public void setScopes(String[] scopes) {
-		this.scopes = scopes;
-	}
-
-	public Map<String, String> getParams() {
-		return params;
-	}
-
-	public void setParams(Map<String, String> params) {
-		this.params = params;
-	}
-
-	@Override
-	public String toString() {
-		try {
-			return jackson.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	return null;
+    }
 
 }

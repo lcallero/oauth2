@@ -1,0 +1,20 @@
+#login
+curl -k -X POST -c cookies https://localhost:9443/store/site/blocks/user/login/ajax/login.jag -d 'action=login&username=admin&password=admin'
+
+#create application
+curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/application/application-add/ajax/application-add.jag -d 'action=addApplication&application=OAuthTwo&tier=Unlimited&description=&callbackUrl='
+
+#generate Oauth Client for previus created application
+curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=generateApplicationKey&application=OAuthTwoClientApp&authorizedDomains=ALL&keytype=PRODUCTION&validityTime=3600&jsonParams={"id":"1001","clientId":"OAuthTwo_PRODUCTION","scopes":["test"],"contactName":"Lua Nova","contactEmail":"lua@nova.com"}'
+
+#list apis
+curl -b cookies -k "https://localhost:9443/store/site/blocks/api/listing/ajax/list.jag?ion=getAllPaginatedPublishedAPIs&tenant=carbon.super&start=1&end=100"
+
+#Subcribe OAuthTwo application to API	
+curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=addAPISubscription&name=jjdemo&version=1.0&provider=admin&tier=Unlimited&applicationName=OAuthTwo'
+
+curl -k -d "grant_type=client_credentials&scope=test" -H "Authorization: Basic NGI3YzE3OWItYTYzZi00YTQ0LWJmMjMtYmVjOGI3YmM3YTE0OjVkYWJlNTVhLTAzZmEtNDZiMy1iY2FiLWVkMmI1Y2RjOThmNQ==, Content-Type: application/x-www-form-urlencoded" http://localhost:8080/v1/token
+
+
+curl -k -H "Authorization:Bearer 2f2a7542-4001-4491-a415-e151cbb9f45e" http://localhost:8280/weatherapi/1.0.0
+

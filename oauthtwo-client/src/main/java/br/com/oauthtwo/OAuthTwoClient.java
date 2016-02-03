@@ -69,7 +69,10 @@ public class OAuthTwoClient extends AbstractKeyManager {
 
     private static final Logger LOGGER = Logger.getLogger(OAuthTwoClient.class.getName());
 
-    // We need to maintain a mapping between Consumer Key and id. To get details of a specific client,
+    private static int seed = 0;
+
+    // We need to maintain a mapping between Consumer Key and id. To get details
+    // of a specific client,
     // we need to call client registration endpoint using id.
     Map<String, Long> nameIdMapping = new HashMap<String, Long>();
 
@@ -143,16 +146,17 @@ public class OAuthTwoClient extends AbstractKeyManager {
 		if (parsedObject != null) {
 		    oAuthApplicationInfo = createOAuthAppfromResponse(parsedObject);
 
-		    // We need the id when retrieving a single OAuth Client. So we have to maintain a mapping
+		    // We need the id when retrieving a single OAuth Client. So
+		    // we have to maintain a mapping
 		    // between the consumer key and the ID.
-		    nameIdMapping.put(oAuthApplicationInfo.getClientId(),
-			    (Long) oAuthApplicationInfo.getParameter("id"));
+		    LOGGER.log(Level.INFO, "OAuthClient - Mapping | ClientId:" + oAuthApplicationInfo.getClientId() + " > Id:"
+			    + oAuthApplicationInfo.getParameter("id"));
+		    nameIdMapping.put(oAuthApplicationInfo.getClientId(), (Long) oAuthApplicationInfo.getParameter("id"));
 
 		    return oAuthApplicationInfo;
 		}
 	    } else {
-		handleException("Some thing wrong here while registering the new client "
-			+ "HTTP Error response code is " + responseCode);
+		handleException("Some thing wrong here while registering the new client " + "HTTP Error response code is " + responseCode);
 	    }
 
 	} catch (UnsupportedEncodingException e) {
@@ -260,7 +264,7 @@ public class OAuthTwoClient extends AbstractKeyManager {
     @Override
     public void deleteApplication(String consumerKey) throws APIManagementException {
 
-	LOGGER.log(Level.INFO, "Delete a new OAuth Client in Authorization Server..");
+	LOGGER.log(Level.INFO, "OAuthTwoClient - deleteApplication: " + consumerKey + " will be deleted.");
 
 	Long id = nameIdMapping.get(consumerKey);
 
@@ -270,10 +274,13 @@ public class OAuthTwoClient extends AbstractKeyManager {
 
 	try {
 
-	    // Deletion has to be called providing the ID. If we don't have the ID we can't proceed with Delete.
+	    // Deletion has to be called providing the ID. If we don't have the
+	    // ID we can't proceed with Delete.
 	    if (id != null) {
 		configURL += "/" + id.toString();
 		HttpDelete httpDelete = new HttpDelete(configURL);
+
+		LOGGER.log(Level.INFO, "OAuthTwoClient - deleteApplication: id:" + id + " URL:" + configURL);
 
 		// Set Authorization Header
 		httpDelete.addHeader(OAuthTwoConstants.AUTHORIZATION, OAuthTwoConstants.BEARER + configURLsAccessToken);
@@ -281,8 +288,7 @@ public class OAuthTwoClient extends AbstractKeyManager {
 		int responseCode = response.getStatusLine().getStatusCode();
 		LOGGER.log(Level.INFO, "Delete application response code :  " + responseCode);
 		if (responseCode == HttpStatus.SC_OK || responseCode == HttpStatus.SC_NO_CONTENT) {
-		    LOGGER.log(Level.INFO,
-			    "OAuth Client for consumer Id " + consumerKey + " has been successfully deleted");
+		    LOGGER.log(Level.INFO, "OAuth Client for consumer Id " + consumerKey + " has been successfully deleted");
 		    nameIdMapping.remove(consumerKey);
 		} else {
 		    handleException("Problem occurred while deleting client for Consumer Key " + consumerKey);
@@ -342,10 +348,13 @@ public class OAuthTwoClient extends AbstractKeyManager {
 		if (reader != null) {
 		    parsedObject = parser.parse(reader);
 
-		    // If we have appended the ID, then the response is a JSONObject if not the response is a JSONArray.
+		    // If we have appended the ID, then the response is a
+		    // JSONObject if not the response is a JSONArray.
 		    if (parsedObject instanceof JSONArray) {
-			// If the response is a JSONArray, then we prime the nameId map,
-			// with the response received. And then return details of the specific client.
+			// If the response is a JSONArray, then we prime the
+			// nameId map,
+			// with the response received. And then return details
+			// of the specific client.
 			addToNameIdMap((JSONArray) parsedObject);
 			for (Object object : (JSONArray) parsedObject) {
 			    JSONObject jsonObject = (JSONObject) object;
@@ -375,8 +384,8 @@ public class OAuthTwoClient extends AbstractKeyManager {
     }
 
     @Override
-    public AccessTokenRequest buildAccessTokenRequestFromOAuthApp(OAuthApplicationInfo oAuthApplication,
-	    AccessTokenRequest tokenRequest) throws APIManagementException {
+    public AccessTokenRequest buildAccessTokenRequestFromOAuthApp(OAuthApplicationInfo oAuthApplication, AccessTokenRequest tokenRequest)
+	    throws APIManagementException {
 	return null;
     }
 
@@ -395,8 +404,7 @@ public class OAuthTwoClient extends AbstractKeyManager {
 	String introspectionURL = config.getParameter(OAuthTwoConstants.INTROSPECTION_URL);
 	String introspectionConsumerKey = config.getParameter(OAuthTwoConstants.INTROSPECTION_CK);
 	String introspectionConsumerSecret = config.getParameter(OAuthTwoConstants.INTROSPECTION_CS);
-	String encodedSecret = Base64
-		.encode(new String(introspectionConsumerKey + ":" + introspectionConsumerSecret).getBytes());
+	String encodedSecret = Base64.encode(new String(introspectionConsumerKey + ":" + introspectionConsumerSecret).getBytes());
 
 	BufferedReader reader = null;
 
@@ -422,7 +430,8 @@ public class OAuthTwoClient extends AbstractKeyManager {
 	    reader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
 
 	    if (HttpStatus.SC_OK == responseCode) {
-		// pass bufferReader object and get read it and retrieve the parsedJson object
+		// pass bufferReader object and get read it and retrieve the
+		// parsedJson object
 		parsedObject = getParsedObjectByReader(reader);
 		if (parsedObject != null) {
 
@@ -434,8 +443,11 @@ public class OAuthTwoClient extends AbstractKeyManager {
 			return tokenInfo;
 		    }
 		    Map principalMap = (Map) principal;
-		    String clientId = (String) principalMap.get("name");
+		    String clientId = (String) principalMap.get("clientId");
 		    Long expiryTimeString = (Long) valueMap.get("expires_in");
+		    String endUserName = (String) principalMap.get("name");
+
+		    LOGGER.log(Level.INFO, "OAuthTwoClient - clientId:" + clientId + " expires_in:" + expiryTimeString);
 
 		    // Returning false if mandatory attributes are missing.
 		    if (clientId == null || expiryTimeString == null) {
@@ -452,6 +464,10 @@ public class OAuthTwoClient extends AbstractKeyManager {
 			tokenInfo.setValidityPeriod(expiryTime - currentTime);
 			// Considering Current Time as the issued time.
 			tokenInfo.setIssuedTime(currentTime);
+			tokenInfo.setEndUserName(endUserName);			
+			tokenInfo.setAccessToken(accessToken);
+//			tokenInfo.
+
 			JSONArray scopesArray = (JSONArray) valueMap.get("scopes");
 
 			if (scopesArray != null && !scopesArray.isEmpty()) {
@@ -485,8 +501,7 @@ public class OAuthTwoClient extends AbstractKeyManager {
 	} catch (UnsupportedEncodingException e) {
 	    handleException("The Character Encoding is not supported. " + e.getMessage(), e);
 	} catch (ClientProtocolException e) {
-	    handleException(
-		    "HTTP request error has occurred while sending request  to OAuth Provider. " + e.getMessage(), e);
+	    handleException("HTTP request error has occurred while sending request  to OAuth Provider. " + e.getMessage(), e);
 	} catch (IOException e) {
 	    handleException("Error has occurred while reading or closing buffer reader. " + e.getMessage(), e);
 	} catch (URISyntaxException e) {
@@ -496,7 +511,8 @@ public class OAuthTwoClient extends AbstractKeyManager {
 	} finally {
 	    IOUtils.closeQuietly(reader);
 	}
-
+	LOGGER.log(Level.INFO, "OAuthTwoClient - getTokenMetada - return SUCCESSFULY" + tokenInfo.getJSONString());
+	
 	return tokenInfo;
     }
 
@@ -570,8 +586,7 @@ public class OAuthTwoClient extends AbstractKeyManager {
      *            Object that needs to be converted.
      * @return
      */
-    private String createJsonPayloadFromOauthApplication(OAuthApplicationInfo oAuthApplicationInfo)
-	    throws APIManagementException {
+    private String createJsonPayloadFromOauthApplication(OAuthApplicationInfo oAuthApplicationInfo) throws APIManagementException {
 
 	Map<String, Object> paramMap = new HashMap<String, Object>();
 
@@ -587,19 +602,18 @@ public class OAuthTwoClient extends AbstractKeyManager {
 	// "contactName":"John Doe",
 	// "contactEmail":"john@doe.com"}
 
+	if (oAuthApplicationInfo.getParameter("id") != null) {
+	    paramMap.put("id", (Long) oAuthApplicationInfo.getParameter("id"));
+	}
 	paramMap.put(OAuthTwoConstants.CLIENT_NAME, oAuthApplicationInfo.getClientName());
+	paramMap.put("clientId", oAuthApplicationInfo.getClientName());
+	paramMap.put("secret", oAuthApplicationInfo.getClientName() + "_secret_" + ++seed);
+
+	paramMap.put(OAuthTwoConstants.CLIENT_CONTACT_NAME, oAuthApplicationInfo.getParameter(OAuthTwoConstants.CLIENT_CONTACT_NAME));
+	paramMap.put(OAuthTwoConstants.CLIENT_CONTAT_EMAIL, oAuthApplicationInfo.getParameter(OAuthTwoConstants.CLIENT_CONTAT_EMAIL));
 
 	JSONArray scopes = (JSONArray) oAuthApplicationInfo.getParameter(OAuthTwoConstants.CLIENT_SCOPE);
 	paramMap.put("scopes", scopes);
-
-	paramMap.put(OAuthTwoConstants.CLIENT_CONTACT_NAME,
-		oAuthApplicationInfo.getParameter(OAuthTwoConstants.CLIENT_CONTACT_NAME));
-	paramMap.put(OAuthTwoConstants.CLIENT_CONTAT_EMAIL,
-		oAuthApplicationInfo.getParameter(OAuthTwoConstants.CLIENT_CONTAT_EMAIL));
-	if (oAuthApplicationInfo.getParameter("id") != null) {
-	    paramMap.put("id", oAuthApplicationInfo.getParameter("id"));
-	}
-
 	return JSONObject.toJSONString(paramMap);
     }
 

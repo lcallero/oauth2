@@ -1,1 +1,1 @@
-Simple implementation of an OAuth2 server. Planing later to integrate with Wso2 API Manager.
+Simple implementation of an OAuth2 server to integrate with WSO2 API Manager.

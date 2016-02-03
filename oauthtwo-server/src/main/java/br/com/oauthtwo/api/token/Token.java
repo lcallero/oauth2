@@ -29,20 +29,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *       "expires_in":3600,
  *       "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA"
  *     }
- *      </pre>
+ * </pre>
  */
 
 public class Token {
 
     private static ObjectMapper jackson = new ObjectMapper();
 
-    private String accessToken;
+    private String access_token;
     private String refreshToken;
-    private String type;
+    private String token_type;
     private Long expires_in;
     private String[] scopes;
     private String audience;
     private Principal principal;
+    private Map<String, String> params = new HashMap<String, String>();
 
     public Principal getPrincipal() {
 	return this.principal;
@@ -52,12 +53,12 @@ public class Token {
 	this.principal = principal;
     }
 
-    public String getAccessToken() {
-	return accessToken;
+    public String getAccess_token() {
+	return access_token;
     }
 
     public void setAccessToken(String accessToken) {
-	this.accessToken = accessToken;
+	this.access_token = accessToken;
     }
 
     public String getRefreshToken() {
@@ -68,11 +69,6 @@ public class Token {
 	this.refreshToken = refreshToken;
     }
 
-    private Map<String, String> params = new HashMap<String, String>();
-
-    private Token() {
-    }
-
     public Long getExpires_in() {
 	return expires_in;
     }
@@ -81,12 +77,12 @@ public class Token {
 	this.expires_in = expires_in;
     }
 
-    public String getType() {
-	return type;
+    public String getToken_type() {
+	return token_type;
     }
 
     public void setType(String type) {
-	this.type = type;
+	this.token_type = type;
     }
 
     public String getAudience() {

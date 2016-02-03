@@ -22,16 +22,11 @@ public class TokenInfoEndpoint {
     public Token sayHello(@QueryParam("access_token") String access_token, @Context HttpServletRequest request) {
 
 	String authorization = request.getHeader("Authorization");
-	System.out.println("Authorization header:" + authorization);
-
 	String encodedString = authorization.split("Basic")[1].trim();
-
-	System.out.println("encodedString" + encodedString);
-
 	String credentials = Base64.decodeAsString(encodedString.getBytes());
-	System.out.println("Credentials: '" + credentials + "' access_token:'" + access_token+"'");
-
+	System.out.println("Credentials: '" + credentials + "' access_token:'" + access_token + "'");
 	Token token = tokenStore.retrieveToken(access_token);
+	System.out.println("Tokeninfo foud token:" + token);
 	if (null == token)
 	    throw new NotFoundException();
 	return token;

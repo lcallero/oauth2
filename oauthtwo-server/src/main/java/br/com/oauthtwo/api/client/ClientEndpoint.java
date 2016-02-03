@@ -29,6 +29,7 @@ public class ClientEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Client create(Client client, @Context HttpServletResponse response) {
+	System.out.println("Client endpoint receive:" + client);
 	clientStore.storeClient(client);
 	response.setStatus(Response.Status.CREATED.getStatusCode());
 	try {
@@ -53,10 +54,12 @@ public class ClientEndpoint {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response delete(@PathParam("id") String id) {
-	Client c = clientStore.removeClient(id);
-	if (c != null && c.getClientId().equalsIgnoreCase(id)) {
-	    return Response.status(Response.Status.OK).entity("Client removed: " + c).build();
+    public Response delete(@PathParam("id") Long id) {
+	Client deadClient = clientStore.retrieveClient(id);
+	System.out.println("Will die:" + deadClient);
+	if (null != deadClient) {
+	    clientStore.removeClient(id);
+	    return Response.status(Status.OK).entity("Client removed: " + deadClient).build();
 	}
 	return Response.status(Status.NOT_FOUND).entity("Client '" + id + "' not found.").build();
     }

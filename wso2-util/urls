@@ -1,20 +1,34 @@
 #login
-curl -k -X POST -c cookies https://localhost:9443/store/site/blocks/user/login/ajax/login.jag -d 'action=login&username=admin&password=admin'
+curl -k -X POST -c cookies https://localhost:9443/store/site/blocks/user/login/ajax/login.jag -d 'action=login&username=admin&password=admin'|json
 
 #create application
-curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/application/application-add/ajax/application-add.jag -d 'action=addApplication&application=OAuthTwo&tier=Unlimited&description=&callbackUrl='
+curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/application/application-add/ajax/application-add.jag -d 'action=addApplication&application=OAuthTwo&tier=Unlimited&description=&callbackUrl='|json
 
 #generate Oauth Client for previus created application
-curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=generateApplicationKey&application=OAuthTwoClientApp&authorizedDomains=ALL&keytype=PRODUCTION&validityTime=3600&jsonParams={"id":"1001","clientId":"OAuthTwo_PRODUCTION","scopes":["test"],"contactName":"Lua Nova","contactEmail":"lua@nova.com"}'
+curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=generateApplicationKey&application=OAuthTwo&authorizedDomains=ALL&keytype=PRODUCTION&validityTime=3600&jsonParams={"id":1001,"clientId":"OAuthTwo_PRODUCTION","scopes":["test"],"contactName":"Luana Nova","contactEmail":"luana@nova.com"}' |json
 
 #list apis
-curl -b cookies -k "https://localhost:9443/store/site/blocks/api/listing/ajax/list.jag?ion=getAllPaginatedPublishedAPIs&tenant=carbon.super&start=1&end=100"
+curl -b cookies -k "https://localhost:9443/store/site/blocks/api/listing/ajax/list.jag?action=getAllPaginatedPublishedAPIs&tenant=carbon.super&start=1&end=100"|json
 
-#Subcribe OAuthTwo application to API	
+#subcribe OAuthTwo application to API	
 curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=addAPISubscription&name=jjdemo&version=1.0&provider=admin&tier=Unlimited&applicationName=OAuthTwo'
 
-curl -k -d "grant_type=client_credentials&scope=test" -H "Authorization: Basic NGI3YzE3OWItYTYzZi00YTQ0LWJmMjMtYmVjOGI3YmM3YTE0OjVkYWJlNTVhLTAzZmEtNDZiMy1iY2FiLWVkMmI1Y2RjOThmNQ==, Content-Type: application/x-www-form-urlencoded" http://localhost:8080/v1/token
+
+#getting an AccessToken
+curl -k -d "grant_type=client_credentials&scope=test" -H "Authorization: Basic T0F1dGhUd29fUFJPRFVDVElPTjpPQXV0aFR3b19QUk9EVUNUSU9OX3NlY3JldF8x, Content-Type: application/x-www-form-urlencoded" "http://localhost:8080/v1/token?scope=test" |json
 
 
-curl -k -H "Authorization:Bearer 2f2a7542-4001-4491-a415-e151cbb9f45e" http://localhost:8280/weatherapi/1.0.0
+
+#calling the API
+curl -k -H "Authorization:Bearer access_token_6" http://172.24.40.48:8280/jjdemo/1.0/service/message/ping
+
+
+#delete application
+curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=deleteAuthApplication&consumerKey=OAuthTwo_PRODUCTION'
+
+#update application
+curl -k -X POST -b cookies curl -k -X POST -b cookies https://localhost:9443/store/site/blocks/subscription/subscription-add/ajax/subscription-add.jag -d 'action=updateClientApplication&application=OAuthTwo&authorizedDomains=ALL&keytype=PRODUCTION&jsonParams={"scopes":["test"],"contactName":"John Doe","contactEmail":"john@doe.com"}'
+
+
+
 
